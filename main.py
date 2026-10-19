@@ -23,26 +23,21 @@ def main():
         top_left_pixel = pixels[0, 0]
         r, g, b = top_left_pixel[0], top_left_pixel[1], top_left_pixel[2]
         print(r, g, b)
+        # for test image if > 400 should raise error
+        crop(img,400, 400)
 
-def crop(x, y):
-    if len(sys.argv) < 2:
-        raise IndexError("Missing input image, usage should look like `python main.py input.png`")
+def crop(image, x, y):
 
-    image = sys.argv[1]
+    width, height = image.size
 
-    with Image.open(image) as img:
-        width, height = img.size
+    if x > width or y > height:
+        raise IndexError("x or y value too big")
+    # set the crop size (left,top,right,bottom)
+    else:
+        box = (0,0,x,y)
+        cropped_img = image.crop(box)
 
-        if x > width or y > height:
-            raise IndexError("x or y value too big")
-        # set the crop size (left,top,right,bottom)
-        else:
-            box = (0,0,x,y)
-            cropped_img = img.crop(box)
-
-    cropped_img.show()
+        cropped_img.show()
 
 if __name__ == "__main__":
     main()
-    # for test image if > 400 should raise error
-    crop(400,400)
