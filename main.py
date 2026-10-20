@@ -1,7 +1,7 @@
-from argparse import ArgumentError
-
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 import sys
+
+CHARACTER_W_TO_H_RATIO = 1/2
 
 def main():
     '''
@@ -25,5 +25,12 @@ def main():
         r, g, b = top_left_pixel[0], top_left_pixel[1], top_left_pixel[2]
         print(r, g, b)
 
+def find_new_height(height, new_width, ascii_columns):
+    "Find the new height the image should be based on its new width, and how many columns we want"
+    character_width = new_width//ascii_columns
+    character_height = character_width*(1/CHARACTER_W_TO_H_RATIO)
+    return (height//character_height)*character_height
+
 if __name__ == "__main__":
     main()
+
