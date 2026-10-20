@@ -51,6 +51,11 @@ def find_new_height(height, ascii_rows):
     "Find the new height the image should be based on its new width, and how many columns we want"
     return (height // ascii_rows) * ascii_rows
 
+def get_brightness(pixel,x,y):
+    pixel_pos = pixel[x,y]
+    r, g, b = pixel_pos[0], pixel_pos[1], pixel_pos[2]
+    return (0.2126 * r) + (0.7152 * g) + (0.0722 * b)
+
 if __name__ == "__main__":
     main()
 
