@@ -39,14 +39,17 @@ def crop(image, x, y):
 
         cropped_img.show()
 
+def find_ascii_rows(height, width, ascii_columns):
+    character_width = width // ascii_columns
+    character_height = character_width * (1 / CHARACTER_W_TO_H_RATIO)
+    return height // character_height
+
 def find_new_width(width, ascii_columns):
     return (width//ascii_columns) * ascii_columns
 
-def find_new_height(height, new_width, ascii_columns):
+def find_new_height(height, ascii_rows):
     "Find the new height the image should be based on its new width, and how many columns we want"
-    character_width = new_width//ascii_columns
-    character_height = character_width*(1/CHARACTER_W_TO_H_RATIO)
-    return (height//character_height)*character_height
+    return (height // ascii_rows) * ascii_rows
 
 if __name__ == "__main__":
     main()
