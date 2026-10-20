@@ -39,5 +39,8 @@ def crop(image, x, y):
 
         cropped_img.show()
 
+def find_new_width(width, ascii_columns):
+    return (width//ascii_columns) * ascii_columns
+
 if __name__ == "__main__":
     main()
