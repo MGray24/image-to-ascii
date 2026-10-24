@@ -22,7 +22,6 @@ def main():
         #example of how to access top left pixel
         top_left_pixel = pixels[0, 0]
         r, g, b = top_left_pixel[0], top_left_pixel[1], top_left_pixel[2]
-        print(r, g, b)
         # for test image if > 400 should raise error
         crop(img,400, 400)
 
@@ -59,15 +58,11 @@ def get_brightness(pixels,x,y):
 def get_region_brightness(pixels,x,y,width,height):
     " Assuming that the width and height are measured in pixels"
     avr_brightness = 0
-    num_of_pixels = width*height
-    for i in range(num_of_pixels):
-        avr_brightness+=get_brightness(pixels,x,y)
-        if x != (width-1):
-            x+=1
-        else:
-            y+=1
-            x=0
-    return avr_brightness/num_of_pixels
+    for y in range(height):
+        for x in range(width):
+            avr_brightness += get_brightness(pixels, x, y)
+
+    return avr_brightness/(width*height)
 
 if __name__ == "__main__":
     main()
