@@ -22,7 +22,6 @@ def main():
         #example of how to access top left pixel
         top_left_pixel = pixels[0, 0]
         r, g, b = top_left_pixel[0], top_left_pixel[1], top_left_pixel[2]
-        print(r, g, b)
         # for test image if > 400 should raise error
         crop(img,400, 400)
 
@@ -37,7 +36,7 @@ def crop(image, x, y):
         box = (0,0,x,y)
         cropped_img = image.crop(box)
 
-        cropped_img.show()
+        return cropped_img
 
 def find_ascii_rows(height, width, ascii_columns):
     character_width = width // ascii_columns
@@ -55,6 +54,15 @@ def get_brightness(pixels,x,y):
     pixel = pixels[x,y]
     r, g, b = pixel[0], pixel[1], pixel[2]
     return (0.2126 * r) + (0.7152 * g) + (0.0722 * b)
+
+def get_region_brightness(pixels,x,y,width,height):
+    " Assuming that the width and height are measured in pixels"
+    avr_brightness = 0
+    for y in range(height):
+        for x in range(width):
+            avr_brightness += get_brightness(pixels, x, y)
+
+    return avr_brightness/(width*height)
 
 if __name__ == "__main__":
     main()
