@@ -37,7 +37,7 @@ def crop(image, x, y):
         box = (0,0,x,y)
         cropped_img = image.crop(box)
 
-        cropped_img.show()
+        return cropped_img
 
 def find_ascii_rows(height, width, ascii_columns):
     character_width = width // ascii_columns
@@ -55,6 +55,19 @@ def get_brightness(pixels,x,y):
     pixel = pixels[x,y]
     r, g, b = pixel[0], pixel[1], pixel[2]
     return (0.2126 * r) + (0.7152 * g) + (0.0722 * b)
+
+def get_region_brightness(pixels,x,y,width,height):
+    " Assuming that the width and height are measured in pixels"
+    avr_brightness = 0
+    num_of_pixels = width*height
+    for i in range(num_of_pixels):
+        avr_brightness+=get_brightness(pixels,x,y)
+        if x != (width-1):
+            x+=1
+        else:
+            y+=1
+            x=0
+    return avr_brightness/num_of_pixels
 
 if __name__ == "__main__":
     main()
