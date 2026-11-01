@@ -26,6 +26,7 @@ def main():
         r, g, b = top_left_pixel[0], top_left_pixel[1], top_left_pixel[2]
         # for test image if > 400 should raise error
         crop(img)
+        draw_character(img)
 
 def crop(image):
 
@@ -68,9 +69,9 @@ def get_region_brightness(pixels,x,y,width,height):
 
 def draw_character(image):
     draw = ImageDraw.Draw(image)
-    font = ImageFont.truetype("C:\\Windows\\Fonts\\arial.ttf", size=45)
+    font = ImageFont.truetype("FiraCode-Regular.ttf", size=45)
     #will introduce which ascii char to choose later
-    ascii_character = "a"
+    ascii_character = "iiii"
     colour = (0,0,0)
     position = (0,0)
     draw.text(position, ascii_character,font=font, fill=colour)
