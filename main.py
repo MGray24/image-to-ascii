@@ -2,6 +2,8 @@ from PIL import Image, ImageFont, ImageDraw
 import sys
 
 CHARACTER_W_TO_H_RATIO = 1/2
+new_height = 400
+new_width = 300
 
 def main():
     '''
@@ -23,17 +25,18 @@ def main():
         top_left_pixel = pixels[0, 0]
         r, g, b = top_left_pixel[0], top_left_pixel[1], top_left_pixel[2]
         # for test image if > 400 should raise error
-        crop(img,400, 400)
+        crop(img)
+        draw_character(img)
 
-def crop(image, x, y):
+def crop(image):
 
     width, height = image.size
 
-    if x > width or y > height:
-        raise IndexError("x or y value too big")
+    if new_width > width or new_height > height:
+        raise IndexError("new_width or new_height value too big")
     # set the crop size (left,top,right,bottom)
     else:
-        box = (0,0,x,y)
+        box = (0,0,new_width,new_height)
         cropped_img = image.crop(box)
 
         return cropped_img
@@ -63,6 +66,19 @@ def get_region_brightness(pixels,x,y,width,height):
             avr_brightness += get_brightness(pixels, x, y)
 
     return avr_brightness/(width*height)
+
+def draw_character(image):
+    draw = ImageDraw.Draw(image)
+    #26 = 16width and 18 height (cross multiply to find for new size)
+    font = ImageFont.truetype("FiraCode-Regular.ttf", size=26)
+    #will introduce which ascii char to choose later
+    ascii_character = "H"
+    colour = (255,255,255)
+    for y in range(-6,380,18):
+        for x in range(0,400,16):
+            position = (x,y)
+            draw.text(position, ascii_character,font=font, fill=colour)
+    image.show()
 
 if __name__ == "__main__":
     main()
