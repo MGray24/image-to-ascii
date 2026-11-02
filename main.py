@@ -69,12 +69,15 @@ def get_region_brightness(pixels,x,y,width,height):
 
 def draw_character(image):
     draw = ImageDraw.Draw(image)
-    font = ImageFont.truetype("FiraCode-Regular.ttf", size=45)
+    #26 = 16width and 18 height (cross multiply to find for new size)
+    font = ImageFont.truetype("FiraCode-Regular.ttf", size=26)
     #will introduce which ascii char to choose later
-    ascii_character = "iiii"
-    colour = (0,0,0)
-    position = (0,0)
-    draw.text(position, ascii_character,font=font, fill=colour)
+    ascii_character = "H"
+    colour = (255,255,255)
+    for y in range(-6,380,18):
+        for x in range(0,400,16):
+            position = (x,y)
+            draw.text(position, ascii_character,font=font, fill=colour)
     image.show()
 
 if __name__ == "__main__":
