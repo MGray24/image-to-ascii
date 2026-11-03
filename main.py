@@ -1,57 +1,72 @@
 from PIL import Image, ImageFont, ImageDraw
+from brightness_map import char_to_brightness
 import sys
 
-CHARACTER_W_TO_H_RATIO = 1/2
-new_height = 400
-new_width = 300
-
 def main():
-    '''
-    When the user calls the program like python main.py file.png,
-    sys.argv[0] will be the name of the script, so main.py
-    sys.argv[1] will be the name of the file, in this case file.png
-    '''
     if len(sys.argv) < 2:
-        raise IndexError("Missing input image, usage should look like `python main.py input.png`")
+        raise ValueError("Usage: python main.py input.png [font_size]")
+
     filename = sys.argv[1]
-    #open image file
-    with Image.open(filename) as img:
-        #get pixel access, this returns a PixelAccess object
-        pixels = img.load()
+    font_size = int(sys.argv[2]) if len(sys.argv) > 2 else 26
 
-        width, height = img.size
+    if font_size <= 0:
+        raise ValueError("Font size must be positive")
 
-        #example of how to access top left pixel
-        top_left_pixel = pixels[0, 0]
-        r, g, b = top_left_pixel[0], top_left_pixel[1], top_left_pixel[2]
-        # for test image if > 400 should raise error
-        crop(img)
-        draw_character(img)
+    font = ImageFont.truetype("FiraCode-Regular.ttf", size=font_size)
 
-def crop(image):
+    with Image.open(filename) as image:
+        image, columns, rows, char_width, char_height = prepare_image(
+            image, font
+        )
 
+        pixels = image.load()
+
+        for row in range(rows):
+            for col in range(columns):
+                brightness = get_region_brightness(
+                    pixels,
+                    col * char_width,
+                    row * char_height,
+                    char_width,
+                    char_height
+                )
+                print(f"{row=} {col=} {brightness=}")
+                # Select ASCII character based on brightness
+
+def crop(image, x, y):
     width, height = image.size
 
-    if new_width > width or new_height > height:
-        raise IndexError("new_width or new_height value too big")
-    # set the crop size (left,top,right,bottom)
+    if x > width or y > height:
+        raise IndexError("x or y value too big")
     else:
-        box = (0,0,new_width,new_height)
+        box = (0, 0, x, y)
         cropped_img = image.crop(box)
-
         return cropped_img
 
-def find_ascii_rows(height, width, ascii_columns):
-    character_width = width // ascii_columns
-    character_height = character_width * (1 / CHARACTER_W_TO_H_RATIO)
-    return height // character_height
 
-def find_new_width(width, ascii_columns):
-    return (width//ascii_columns) * ascii_columns
+def calculate_grid(image, font):
+    char_width = round(font.getlength("B"))
+    ascent, descent = font.getmetrics()
+    char_height = ascent
 
-def find_new_height(height, ascii_rows):
-    "Find the new height the image should be based on its new width, and how many columns we want"
-    return (height // ascii_rows) * ascii_rows
+    columns = image.width // char_width
+    rows = image.height // char_height
+
+    return columns, rows, char_width, char_height
+
+
+def prepare_image(image, font):
+    columns, rows, char_width, char_height = calculate_grid(image, font)
+
+    if columns == 0 or rows == 0:
+        raise ValueError("Font is too large for the image")
+
+    new_width = columns * char_width
+    new_height = rows * char_height
+
+    cropped_image = crop(image, new_width, new_height)
+
+    return cropped_image, columns, rows, char_width, char_height
 
 def get_brightness(pixels,x,y):
     pixel = pixels[x,y]
@@ -61,24 +76,11 @@ def get_brightness(pixels,x,y):
 def get_region_brightness(pixels,x,y,width,height):
     " Assuming that the width and height are measured in pixels"
     avr_brightness = 0
-    for y in range(height):
-        for x in range(width):
-            avr_brightness += get_brightness(pixels, x, y)
+    for j in range(height):
+        for i in range(width):
+            avr_brightness += get_brightness(pixels, x+i, y+j)
 
     return avr_brightness/(width*height)
-
-def draw_character(image):
-    draw = ImageDraw.Draw(image)
-    #26 = 16width and 18 height (cross multiply to find for new size)
-    font = ImageFont.truetype("FiraCode-Regular.ttf", size=26)
-    #will introduce which ascii char to choose later
-    ascii_character = "H"
-    colour = (255,255,255)
-    for y in range(-6,380,18):
-        for x in range(0,400,16):
-            position = (x,y)
-            draw.text(position, ascii_character,font=font, fill=colour)
-    image.show()
 
 if __name__ == "__main__":
     main()
