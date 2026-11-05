@@ -32,6 +32,7 @@ def main():
                 )
                 print(f"{row=} {col=} {brightness=}")
                 # Select ASCII character based on brightness
+                print(matching_brightness(brightness))
 
 def crop(image, x, y):
     width, height = image.size
@@ -81,6 +82,18 @@ def get_region_brightness(pixels,x,y,width,height):
             avr_brightness += get_brightness(pixels, x+i, y+j)
 
     return avr_brightness/(width*height)
+
+def matching_brightness(brightness):
+    char = None
+    pair_list = list(char_to_brightness.items())
+    diff_to_beat = abs((brightness- list(char_to_brightness.values())[0]))
+    for key, val in pair_list:
+        diff = abs(brightness - val)
+        if diff < diff_to_beat:
+            char = key
+            diff_to_beat=diff
+    return char
+
 
 if __name__ == "__main__":
     main()
