@@ -1,8 +1,10 @@
 from PIL import Image, ImageFont, ImageDraw
 import sys
+import numpy as np
 from main import get_region_brightness, crop
 
-ASCII_CHARACTERS = "B%8&WM#*oahkbdwmZO0LCJUYXzcvunxrt1?-+~<>!I:."
+
+ASCII_CHARACTERS = "B%8&WM#*oahkbdwmZO0LCJUYXzcvunxrt1?-+~<>!I:. "
 FONT_PATH = "FiraCode-Regular.ttf"
 FONT_SIZE = 26
 
@@ -41,7 +43,7 @@ def draw_character(image, font):
     pixels = image.load()
     index = 0
 
-    print("{")
+    brightnesses = {}
     for j in range(image.height // char_height):
         for i in range(image.width // char_width):
             if index >= len(ASCII_CHARACTERS):
@@ -51,11 +53,16 @@ def draw_character(image, font):
                 pixels, i*char_width, j*char_height, char_width, char_height
             )
 
-            print(f"'{ASCII_CHARACTERS[index]}':{brightness},")
+            brightnesses[ASCII_CHARACTERS[index]] = brightness
             index += 1
+    values = np.array(list(brightnesses.values()))
+    scaled = np.interp(values, (values.min(), values.max()), (0, 255))
 
-    print("}")
+    data = dict(zip(brightnesses.keys(), scaled))
     image.show()
+    for key, val in data.items():
+        print(f"'{key}':{val},")
+
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 from PIL import Image, ImageFont, ImageDraw
 from brightness_map import char_to_brightness
 import sys
+import numpy as np
 
 def main():
     if len(sys.argv) < 2:
@@ -19,6 +20,11 @@ def main():
             image, font
         )
 
+        #this is the black image we will draw on, this is not the input image
+        #it will be the same width and height as the image passed in after cropping
+        output_image = Image.new("RGB", (image.width, image.height), "black")
+        draw = ImageDraw.Draw(output_image)
+
         pixels = image.load()
 
         for row in range(rows):
@@ -30,10 +36,11 @@ def main():
                     char_width,
                     char_height
                 )
-                print(f"{row=} {col=} {brightness=}")
+                #print(f"{row=} {col=} {brightness=}")
                 # Select ASCII character based on brightness
-                print(matching_brightness(brightness))
-
+                best_character = matching_brightness(brightness)
+                draw.text((col*char_width,row*char_height), best_character, font=font, fill=(255, 255, 255))
+        output_image.show()
 def crop(image, x, y):
     width, height = image.size
 
@@ -71,7 +78,9 @@ def prepare_image(image, font):
 
 def get_brightness(pixels,x,y):
     pixel = pixels[x,y]
-    r, g, b = pixel[0], pixel[1], pixel[2]
+    r, g, b, a = pixel[0], pixel[1], pixel[2], pixel[3]
+    if a == 0:
+        return 0
     return (0.2126 * r) + (0.7152 * g) + (0.0722 * b)
 
 def get_region_brightness(pixels,x,y,width,height):
@@ -89,7 +98,7 @@ def matching_brightness(brightness):
     diff_to_beat = abs((brightness- list(char_to_brightness.values())[0]))
     for key, val in pair_list:
         diff = abs(brightness - val)
-        if diff < diff_to_beat:
+        if diff <= diff_to_beat:
             char = key
             diff_to_beat=diff
     return char
