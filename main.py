@@ -78,9 +78,13 @@ def prepare_image(image, font):
 
 def get_brightness(pixels,x,y):
     pixel = pixels[x,y]
-    r, g, b, a = pixel[0], pixel[1], pixel[2], pixel[3]
-    if a == 0:
-        return 0
+    if len(pixel) == 4:
+        r, g, b, a = pixel[0], pixel[1], pixel[2], pixel[3]
+        if a == 0:
+            return 0
+    else:
+        r, g, b= pixel[0], pixel[1], pixel[2]
+
     return (0.2126 * r) + (0.7152 * g) + (0.0722 * b)
 
 def get_region_brightness(pixels,x,y,width,height):
