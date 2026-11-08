@@ -1,7 +1,8 @@
 from PIL import Image, ImageFont, ImageDraw
 from brightness_map import char_to_brightness
 import sys
-import numpy as np
+
+color_option = input("Do you want a colored image(Say no for black and white):")
 
 def main():
     if len(sys.argv) < 2:
@@ -36,10 +37,20 @@ def main():
                     char_width,
                     char_height
                 )
+                color = get_region_color(
+                    pixels,
+                    col * char_width,
+                    row * char_height,
+                    char_width,
+                    char_height
+                )
                 #print(f"{row=} {col=} {brightness=}")
                 # Select ASCII character based on brightness
                 best_character = matching_brightness(brightness)
-                draw.text((col*char_width,row*char_height), best_character, font=font, fill=(255, 255, 255))
+                if color_option == "no":
+                    draw.text((col*char_width,row*char_height), best_character, font=font, fill=(255,255,255))
+                else:
+                    draw.text((col * char_width, row * char_height), best_character, font=font, fill=color)
         output_image.show()
 def crop(image, x, y):
     width, height = image.size
@@ -107,6 +118,23 @@ def matching_brightness(brightness):
             diff_to_beat=diff
     return char
 
+def get_color(pixels,x,y):
+    pixel = pixels[x,y]
+    r, g, b = pixel[0], pixel[1], pixel[2]
+
+    return r,g,b
+
+def get_region_color(pixels,x,y,width,height):
+    avr_r, avr_g, avr_b = 0, 0, 0
+
+    for j in range(height):
+        for i in range(width):
+            r,g,b =get_color(pixels, x+i, y+j)
+            avr_r += r
+            avr_g += g
+            avr_b += b
+
+    return int(avr_r/(width*height)),int(avr_g/(width*height)),int(avr_b/(width*height))
 
 if __name__ == "__main__":
     main()
