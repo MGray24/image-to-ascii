@@ -99,7 +99,7 @@ def get_brightness(pixels,x,y):
     return (0.2126 * r) + (0.7152 * g) + (0.0722 * b)
 
 def get_region_brightness(pixels,x,y,width,height):
-    " Assuming that the width and height are measured in pixels"
+    """ Assuming that the width and height are measured in pixels"""
     avr_brightness = 0
     for j in range(height):
         for i in range(width):
